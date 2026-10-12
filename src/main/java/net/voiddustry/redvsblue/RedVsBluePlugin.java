@@ -639,20 +639,23 @@ public class RedVsBluePlugin extends Plugin {
                 Unit old = player.unit();
                 if (old != null && old.spawnedByCore) Call.unitDespawn(old);
 
-                player.team(Team.blue);
                 players.put(player.uuid(), new PlayerData(player));
                 PlayerData data = players.get(player.uuid());
                 Unit unit = getStartingUnit().spawn(Team.blue, blueSpawnX, blueSpawnY);
 
                 data.setUnit(unit);
                 player.unit(unit);
+                player.team(Team.blue);
                 data.setLastRedeemTime(Instant.now().getEpochSecond());
                 sendBundled("game.redeemed", player.name);
             } else {
                 player.sendMessage(Bundle.get("game.late", player.locale));
             }
         });
-        
+
+        handler.<Player>register("smite", "Abandon hope, all ye who enter here", (String[] args, Player player) -> {
+            if (!playing || player.team() != Team.blue) return;
+        });
         handler.<Player>removeCommand("rtv");
         handler.<Player>removeCommand("observer");
         handler.<Player>removeCommand("spectator");
